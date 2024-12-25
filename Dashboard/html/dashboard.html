@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <button class="button invite-button">Invite Bot</button>
+        </div>
+        <div class="navbar-right">
+            <p id="navbar-username">Loading...</p>
+            <img src="" alt="User Avatar" id="navbar-avatar">
+            <button class="button logout-button">Logout</button>
+        </div>
+    </div>
+    <div class="container">
+        <header>
+            <h1>Welcome to your dashboard</h1>
+            <p id="welcome-message"></p>
+        </header>
+        <main>
+            <div class="server-list" id="server-list"></div>
+        </main>
+        <footer>&copy 2024 Razor. All rights reserved.</footer>
+    </div>
+    <script>
+        window.onload = async () => {
+            try {
+                const userResponse = await fetch('/api/user-info');
+                const botGuildsResponse = await fetch('/api/bot-guilds');
+
+                if(userResponse.ok && botGuildsResponse.ok) {
+                    const userInfo = await userResponse.json();
+                    const botGuilds = await botGuildsResponse.json();
+
+                    const {username, avatar, guilds} = userInfo;
+
+                    document.getElementById('navbar-username').innerText = username;
+                    if (avatar) {
+                        document.getElementById('navbar-avatar').src = avatar;
+                    }
+
+                    const botGuildIds = new Set(botGuilds.map(guild => guild.id));
+
+                    const serverList = document.getElementById('server-list');
+                    serverList.innerHTML = '';
+                    guilds.forEach(guild => {
+                        if (botGuildIds.has(guild.id) && (guild.permissions & 0x8) === 0x8) {
+                            const card = document.createElement('div');
+                            card.classList = ('card');
+
+                            const guildBanner = document.createElement('div');
+                            guildBanner.className = 'guild-banner';
+                            guildBanner.style.backgroundImage = guild.banner ? `url(https://cdn.discordapp.com/banners/${guild.id}/${guild.banner}.png)` : `url("https://i.imgur.com/UBoJzXd.png")`;
+
+                            card.appendChild(guildBanner);
+
+                            const guildIcon = document.createElement('img');
+                            guildIcon.classList.add('guild-icon');
+                            guildIcon.src = guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : `https://i.imgur.com/wNbGrq3.jpeg`;
+
+                            card.appendChild(guildIcon);
+
+                            const cardContent = document.createElement('div');
+                            cardContent.className = 'card-content';
+
+                            const guildName = document.createElement('div');
+                            guildName.innerText = guild.name;
+                            cardContent.appendChild(guildName);
+
+                            card.appendChild(cardContent);
+
+                            const editButton = document.createElement('button');
+                            editButton.className = 'edit-button';
+                            editButton.innerText = 'Edit';
+                            editButton.onclick = () => {
+                                // Add logic for what should happen when the button is clicked
+                                console.log(`Edit button clicked for guild ${guild.name}`);
+                            }
+                            card.appendChild(editButton);
+
+                            serverList.appendChild(card);
+                        }
+                    });
+                } else {
+                    console.error('Failed to fetch', userResponse.status, botGuildsResponse.status);
+                    document.getElementById('welcome-message').innerText = 'Failed to load user info.';
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                document.getElementById('welcome-message').innerText = 'Error loading user info.';
+            }
+        }
+    </script>
+</body>
+</html>
