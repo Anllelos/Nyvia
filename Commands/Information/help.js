@@ -119,12 +119,12 @@ module.exports = {
       })
       .addFields({
         name: `**__Extras__**`,
-        value: `<:eco:1271444950676013189> Economy & Ranking\n<:files:1271441956936876053> Images\n<:utils:1271442002285690891> Utilities\n<:ban:1271441940097011762> Tools\n<:boost:1271441943192273027> Premium Commands`,
+        value: `<:eco:1271444950676013189> Economy & Ranking\n<:files:1271441956936876053> Images\n<:utils:1271442002285690891> Utilities\n<:ban:1271441940097011762> Tools`,
         inline: true,
       })
       .setThumbnail(client.user.avatarURL({ size: 512 }))
       .setFooter({
-        text: `Made with 💖 by @jarvisplayz`,
+        text: `Made with 💖 by @arpandevv`,
         iconURL: client.user.avatarURL(),
       })
       .setColor(client.config.embed);
@@ -180,7 +180,7 @@ module.exports = {
               .join(", ")}`
           )
           .setFooter({
-            text: `Made with 💖 by @jarvisplayz`,
+            text: `Made with 💖 by @arpandevv`,
             iconURL: client.user.avatarURL(),
           })
           .setThumbnail(client.user.displayAvatarURL());
@@ -194,3 +194,8 @@ module.exports = {
     });
   },
 };
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

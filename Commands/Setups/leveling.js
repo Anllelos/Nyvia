@@ -82,7 +82,7 @@ module.exports = {
         .setName("disable-multiplier")
         .setDescription("Disables the multiplier of your role.")
     ),
-  async execute(interaction) {
+  async execute(interaction, client) {
     if (
       !interaction.member.permissions.has(
         PermissionsBitField.Flags.Administrator
@@ -109,10 +109,7 @@ module.exports = {
           });
         else {
           const setupembed = new EmbedBuilder()
-            .setColor("DarkBlue")
-            .setThumbnail(
-              "https://cdn.discordapp.com/attachments/1080219392337522718/1081275127850864640/largeblue.png"
-            )
+            .setColor(client.config.embed)
             .setAuthor({ name: `⬆ Leveling System` })
             .setFooter({ text: `⬆ Leveling System Setup` })
             .setTimestamp()
@@ -148,10 +145,7 @@ module.exports = {
           });
         else {
           const disableembed = new EmbedBuilder()
-            .setColor("DarkBlue")
-            .setThumbnail(
-              "https://cdn.discordapp.com/attachments/1080219392337522718/1081275127850864640/largeblue.png"
-            )
+            .setColor(client.config.embed)
             .setAuthor({ name: `⬆ Leveling System` })
             .setFooter({ text: `⬆ Leveling System Disableds` })
             .setTimestamp()
@@ -278,3 +272,8 @@ module.exports = {
     }
   },
 };
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

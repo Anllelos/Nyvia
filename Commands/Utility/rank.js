@@ -38,9 +38,6 @@ module.exports = {
 
     const embednoxp = new EmbedBuilder()
       .setColor("Purple")
-      .setThumbnail(
-        "https://cdn.discordapp.com/attachments/1080219392337522718/1081227919256457246/largepurple.png"
-      )
       .setTimestamp()
       .setTitle(`> ${Member.username}'s Rank`)
       .setFooter({ text: `⬆ ${Member.username}'s Ranking` })
@@ -78,3 +75,8 @@ module.exports = {
     await interaction.editReply({ files: [attachment] });
   },
 };
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

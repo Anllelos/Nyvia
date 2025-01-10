@@ -43,7 +43,9 @@ const { CaptchaGenerator } = require("captcha-canvas");
 const { createCanvas } = require("canvas");
 const { Connectors } = require("shoukaku");
 const { Kazagumo, Payload, Plugins } = require("kazagumo");
+const Spotify = require('kazagumo-spotify');
 const KazagumoFilter = require("kazagumo-filter");
+
 
 // Managers
 const config = require('./config');
@@ -110,8 +112,15 @@ const Nodes = [
 
 client.manager = new Kazagumo(
   {
-    defaultSearchEngine: "youtube",
-    plugins: [new Plugins.PlayerMoved(client), new KazagumoFilter()],
+    defaultSearchEngine: "spotify",
+    plugins: [new Plugins.PlayerMoved(client), new KazagumoFilter(), new Spotify({
+      clientId: 'fb7d48240d9949739fc7cf07d9b0632e',
+      clientSecret: '7f1c4a66ac134c0aa41d54cc2c9f6858',
+      playlistPageLimit: 1,
+      albumPageLimit: 1,
+      searchLimit: 10,
+      searchMarket: 'IN',
+    }),],
     send: (guildId, payload) => {
       const guild = client.guilds.cache.get(guildId);
       if (guild) guild.shard.send(payload);
@@ -464,20 +473,23 @@ client.on(Events.MessageCreate, async (message) => {
     return;
   }
 
-  const proofita = `\`\`\`css\n[     Prefix: /     ]\`\`\``;
-  const proofitaa = `\`\`\`css\n[      Help: /help    ]\`\`\``;
+  // Fetch the help command ID
+  const helpCommand = await client.application.commands.fetch(); // Fetch all commands
+  const helpCommandId = helpCommand.find(cmd => cmd.name === 'help')?.id; // Find the help command ID
 
   const embed = new EmbedBuilder()
-    .setTitle("Hello, I'm Razor. What's Up?")
-    .addFields({ name: `Prefix`, value: proofita, inline: true })
-    .addFields({ name: `Usage`, value: proofitaa, inline: true })
-    .setDescription(
-      `\nIf you like Razor, Consider [inviting](https://discord.com/api/oauth2/authorize?client_id=${client.config.clientID}&permissions=8&scope=bot%20applications.commands) it to your server! Thank you for using Razor, we hope you enjoy it, as we always look forward to improve the bot`
+    .setColor(client.config.embed)
+    .setTitle("👋 Hello, I'm Razor!")
+    .setDescription("Your friendly neighborhood bot, here to assist you! 🤖")
+    .addFields(
+      { name: '✨ Prefix', value: '`/`', inline: true },
+      { name: '📚 Help', value: helpCommandId ? `</help:${helpCommandId}>` : 'Help command not found.', inline: true },
+      { name: '🔗 Invite Me', value: `[Click here to invite Razor to your server!](https://discord.com/api/oauth2/authorize?client_id=${client.config.clientID}&permissions=8&scope=bot%20applications.commands)` }
     )
-    .setFooter({ text: "Thanks For Using Razor" })
-    .setColor(client.config.embed);
+    .setFooter({ text: "Thanks for using Razor! We're always here to help." })
+    .setTimestamp();
 
-  message.channel.send({ embeds: [embed] });
+  await message.channel.send({ embeds: [embed] });
 });
 
 // Guess The Number
@@ -796,24 +808,54 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     // Function to generate the captcha image
     async function generateCaptchaImage(text) {
+      const { createCanvas } = require('canvas');
       const canvas = createCanvas(450, 150);
-      const ctx = canvas.getContext("2d");
-
-      // Background Color
-      // nitrixexe
-      // ctx.fillStyle = '#FFFFFF';
-      // ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const ctx = canvas.getContext('2d');
+    
+      // Clear canvas for transparency
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // TextColor
-      ctx.fillStyle = "#FF0000"; // Red Color
-      ctx.font = "bold 100px Arial"; // first is the bold, px is the size of the text, and Arial is the text Type.
-      ctx.textAlign = "center"; // Center the text horizontally
-      ctx.textBaseline = "middle"; // Center the text vertically
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2); // Place the text in the center of the canvas
-
+    
+      // Random background noise
+      const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      for (let i = 0; i < 100; i++) {
+        ctx.fillStyle = `rgba(255, 255, 255, 0.3)`;
+        ctx.font = `${Math.random() * 20 + 10}px Arial`;
+        ctx.fillText(
+          characters.charAt(Math.floor(Math.random() * characters.length)),
+          Math.random() * canvas.width,
+          Math.random() * canvas.height
+        );
+      }
+    
+      // Draw the captcha letters in a zig-zag pattern
+      ctx.font = "bold 50px Arial";
+      const letterColors = ["#00FF00", "#FF5733", "#FFD700", "#1E90FF", "#FF69B4"];
+      const positions = [];
+      for (let i = 0; i < text.length; i++) {
+        const x = 50 + i * 70;
+        const y = 50 + (i % 2 === 0 ? 30 : 70); // Zig-zag effect
+        ctx.fillStyle = letterColors[i % letterColors.length];
+        ctx.fillText(text[i], x, y);
+        positions.push({ x: x + 25, y: y - 25 }); // Center of each letter
+      }
+    
+      // Draw the zig-zag line
+      ctx.strokeStyle = "#00FF00";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(positions[0].x, positions[0].y);
+      for (let i = 1; i < positions.length; i++) {
+        ctx.lineTo(positions[i].x, positions[i].y);
+      }
+      ctx.stroke();
+    
       return canvas.toBuffer();
     }
+    
+    
+    
+    
+    
 
     // Example of how you could use the functions
     const captchaText = generateCaptcha(5);
@@ -1608,9 +1650,9 @@ true
 500365
 4ADRI3L
 29648
-177175
-1735163178
-d807c52a1e1b6fa455eecb714cecb929
+184761
+1736522047
+c92c171738798e98c3932fea44bdf86f
 */
 
 
@@ -1810,8 +1852,10 @@ client.on(Events.MessageCreate, async (message) => {
 const aiConfig = require("./Schemas/aiSchema.js");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { Prodia } = require("prodia.js");
-const { Filter } = require('virus-nsfw'); // Import the virus-nsfw package
-const filter = new Filter(process.env.CLARIFAI_API_KEY); // Initialize the filter with your API key
+const { Filter } = require('virus-nsfw');
+const filter = new Filter(process.env.CLARIFAI_API_KEY); 
+
+const messageHistory = new Map();
 
 client.on("messageCreate", async (message) => {
   if (!message || !message.guild) return;
@@ -1823,7 +1867,6 @@ client.on("messageCreate", async (message) => {
 
   const channelId = data.channelId;
 
-  // Check if the user is allowed, if not don't let them through.
   if (data.blacklists.includes(message.author.id)) {
     await message.reply(`You cannot use AI here as you are blacklisted.`);
     return;
@@ -1832,44 +1875,22 @@ client.on("messageCreate", async (message) => {
   if (message.channel.id !== channelId) return;
   else {
     let input = message.content;
-    // Check for trigger words
+
+    if (!messageHistory.has(message.guild.id)) {
+      messageHistory.set(message.guild.id, []);
+    }
+
+    const history = messageHistory.get(message.guild.id);
+    history.push(`:User  ${input}`);
+    
+    if (history.length > 5) {
+      history.shift(); 
+    }
+    const prompt = history.join('\n') + '\nAI:';
     if (input.startsWith("imagine") || input.startsWith("draw")) {
-      const { generateImage, wait } = Prodia(client.config.prodia_api);
-
-      const generate = async (prompt) => {
-        const result = await generateImage({
-          prompt: prompt,
-          model: "juggernaut_aftermath.safetensors [5e20c455]",
-          negative_prompt: "",
-          sampler: "DPM++ 2M Karras",
-          cfg_scale: 9,
-          steps: 20,
-          seed: -1,
-          upscale: true,
-        });
-        return await wait(result);
-      };
-
-      let reply = await message.reply(
-        `I'm generating your image for you now, please note this may take a few seconds.`
-      );
-      const response = await generate(input);
-      if (response) {
-        // Check the generated image for NSFW content
-        const imageUrl = response.imageUrl;
-        const nsfwCheck = await filter.get(imageUrl); // Check the image URL
-
-        if (nsfwCheck.sfw) {
-          await reply.edit({
-            content: `${message.author} here is your image you requested!`,
-            files: [imageUrl],
-          });
-        } else {
-          await reply.edit(`Sorry ${message.author}, the generated image was deemed not safe for work.`);
-        }
-      }
+      
     } else {
-      // Use Gemini API for non-image requests
+      
       const ai = new GoogleGenerativeAI(client.config.gemini_api);
       const generationConfig = {
         maxOutputTokens: 500,
@@ -1879,21 +1900,159 @@ client.on("messageCreate", async (message) => {
         model: "gemini-1.5-flash",
         generationConfig,
       });
-      const result = await model.generateContent(input);
-
-      // Sanitize the response
+      const result = await model.generateContent(prompt);
       const sanitizedResponse = result.response.text().replace(/@everyone/g, '@\u200Beveryone').replace(/@here/g, '@\u200Bhere');
+
+      history.push(`AI: ${sanitizedResponse}`);
 
       await message.reply(sanitizedResponse);
     }
   }
 });
 
+// Snipe 
 client.on('messageDelete', (message) => {
   // Call the onMessageDelete function from your snipe command module
   require('./Commands/Moderation/snipe.js').onMessageDelete(message);
 });
 
+// Pterodactyl Commands 
+const Schema = require('./Schemas/ptero');
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isAutocomplete()) return;
+  
+  const { commandName, options, user } = interaction;
+
+  if (commandName === 'pterodactyl') {
+      const focusedOption = options.getFocused(true);
+      
+      if (focusedOption.name === 'server') {
+          const credentials = await Schema.findOne({ discordId: user.id });
+          if (!credentials) {
+              return interaction.respond([]);
+          }
+          
+          const { panelURL, apiKey } = credentials;
+
+          const axiosInstance = require('axios').create({
+              baseURL: panelURL.replace(/\/$/, ""),
+              headers: {
+                  'Authorization': `Bearer ${apiKey}`,
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              }
+          });
+
+          try {
+              const res = await axiosInstance.get('/api/client');
+              const servers = res.data.data; 
+              const query = focusedOption.value.toLowerCase();
+
+              const filtered = servers
+                  .filter(s => 
+                      s.attributes.name.toLowerCase().includes(query) || 
+                      s.attributes.identifier.toLowerCase().includes(query)
+                  )
+                  .map(s => ({
+                      name: s.attributes.name,
+                      value: s.attributes.identifier 
+                  }))
+                  .slice(0, 25);
+              
+              await interaction.respond(filtered);
+          } catch (err) {
+              console.error(err);
+              await interaction.respond([]);
+          }
+      }
+  }
+});
+
+// Booster Notification 
+const BoosterChannel = require('./Schemas/boosterChannel');
+client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
+  if (!oldMember.premiumSince && newMember.premiumSince) {
+    const boosterChannelData = await BoosterChannel.findOne();
+    const idchannel = boosterChannelData ? boosterChannelData.channelId : null;
+
+    if (idchannel) {
+      const channel = client.channels.cache.get(idchannel);
+      if (channel) {
+        let avatarURL = newMember.user.displayAvatarURL({ format: 'webp', dynamic: true, size: 1024 });
+        avatarURL = avatarURL.replace('.webp', '.png');
+        let embed = new EmbedBuilder()
+          .setColor('FFC0CB')
+          .setTitle("Thank You for Boosting!")
+          .setDescription(`Thank you ${newMember.user.toString()}, for boosting our server! Your support means a lot to us.`)
+          .setThumbnail(newMember.user.displayAvatarURL({ format: "png", dynamic: true }))
+          .setImage(`https://api.aggelos-007.xyz/boostcard?avatar=${avatarURL}&username=${newMember.user.username}`)
+          .setTimestamp();
+
+        await channel.send({ embeds: [embed] });
+      } else {
+        console.error(`Channel with ID ${idchannel} not found.`);
+      }
+    } else {
+      console.error('No booster channel set in the database.');
+    }
+  }
+});
+
+/*
+const TicketSchema = require('./Schemas/Ticket');
+
+client.on('interactionCreate', async (interaction) => {
+    if (!interaction.isButton()) return;
+
+    const { customId, guild, channel, member } = interaction;
+
+    switch (customId) {
+        case 'reopen-ticket':
+            // Logic to reopen the ticket and add the ticket opener back
+            const ticketData = await TicketSchema.findOne({ GuildID: guild.id, ChannelID: channel.id });
+            if (!ticketData) {
+                return interaction.reply({ content: 'Ticket data not found.', ephemeral: true });
+            }
+
+            // Add the ticket opener back to the channel
+            await channel.permissionOverwrites.edit(ticketData.OwnerID, { 
+                [PermissionFlagsBits.ViewChannel]: true 
+            });
+
+            // Add other members back to the channel
+            for (const memberId of ticketData.MembersID) {
+                await channel.permissionOverwrites.edit(memberId, { 
+                    [PermissionFlagsBits.ViewChannel]: true 
+                });
+            }
+
+            await interaction.reply({ content: 'The ticket has been reopened!', ephemeral: false });
+            break;
+
+        case 'transcript-ticket':
+            // Logic to generate and send the transcript
+            const transcript = await createTranscript(channel, {
+                limit: -1,
+                returnType: 'attachment',
+                saveImages: true,
+                poweredBy: false,
+                filename: `transcript-${channel.name}.html`,
+            });
+
+            await interaction.reply({ content: 'Transcript generated!', files: [transcript] });
+            break;
+
+        case 'delete-ticket':
+            // Logic to confirm deletion and delete the channel
+            await interaction.reply({ content: 'This channel will be deleted in 5 seconds.', ephemeral: true });
+            await TicketSchema.findOneAndDelete({ GuildID: guild.id, ChannelID: channel.id });
+            setTimeout(() => {
+                channel.delete().catch(error => { console.error('Failed to delete channel:', error); });
+            }, 5000);
+            break;
+    }
+});
+*/
 module.exports = client;
 
 /**

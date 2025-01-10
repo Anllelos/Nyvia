@@ -85,3 +85,8 @@ module.exports = {
     await interaction.reply({ embeds: [embed] });
   },
 };
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

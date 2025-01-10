@@ -8,6 +8,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("example-command")
     .setDescription("Temeplate for a new command! 😉"),
+    premiumOnly: true,
 
   async execute(interaction, client) {
     const embed = new EmbedBuilder()

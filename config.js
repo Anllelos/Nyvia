@@ -22,18 +22,18 @@ const config = {
   developerid: "",
   // Your Discord Bot ID for API interactions
   clientID: "",
-  // API key for image generation (Obtain from https://discord.gg/QprAy5WWWQ)
+  // API key for image generation (Obtain from https://discord.gg/QprAy5WWWQ) [Required]
   imagegenapi: "",
-  // API key for Gemini services (Obtain from https://ai.google.dev/)
+  // API key for Gemini services (Obtain from https://ai.google.dev/) [Required]
   gemini_api: "",
-  // API key for Prodia services (Obtain from https://app.prodia.com/api)
+  // API key for Prodia services (Obtain from https://app.prodia.com/api) (Optional)
   prodia_api: "",
 
   // Lavalink server configuration
   lavalink: {
     name: `Razor Node`,
-    url: `lavalink.anantix.network:2335`,
-    auth: "pg6|(}7fuD_:7d#QQq?9",
+    url: `lavalink.razorbot.buzz:6969`,
+    auth: "dsc.gg/razorsupport",
     secure: false,
   },
 };

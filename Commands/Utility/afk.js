@@ -4,20 +4,20 @@ const afkSchema = require("../../Schemas/afkschema");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(`afk`)
-    .setDescription(`Go afk within your server`)
+    .setDescription(`Go AFK within your server`)
     .addSubcommand((command) =>
       command
         .setName("set")
-        .setDescription(`Go afk within your server`)
+        .setDescription(`Go AFK within your server`)
         .addStringOption((option) =>
           option
             .setName("message")
-            .setDescription(`The reason for going afk`)
+            .setDescription(`The reason for going AFK`)
             .setRequired(false)
         )
     )
     .addSubcommand((command) =>
-      command.setName("remove").setDescription(`Remove afk within your server`)
+      command.setName("remove").setDescription(`Remove AFK within your server`)
     ),
   async execute(interaction, client) {
     const { options } = interaction;
@@ -28,15 +28,29 @@ module.exports = {
       User: interaction.user.id,
     });
 
+    
+    function isValidAFKReason(reason) {
+      const mentionRegex = /<@!?(\d+)>|@everyone|@here/g;
+      return !mentionRegex.test(reason);
+    }
+
     switch (sub) {
       case "set":
-        if (Data)
+        if (Data) {
           return await interaction.reply({
-            content: `Your are already afk within this server`,
+            content: `You are already AFK within this server.`,
             ephemeral: true,
           });
-        else {
-          const message = options.getString("message");
+        } else {
+          const message = options.getString("message") || "No Reason Given";
+          
+          if (!isValidAFKReason(message)) {
+            return await interaction.reply({
+              content: "You cannot use mentions or @everyone/@here in your AFK reason.",
+              ephemeral: true,
+            });
+          }
+
           const nickname =
             interaction.member.nickname || interaction.user.username;
           await afkSchema.create({
@@ -52,20 +66,19 @@ module.exports = {
           });
 
           await interaction.reply({
-            content: `> <:etick:1238390219300933685> You are now afk within this server! | Reason: **${message}**`,
+            content: `> <:etick:1238390219300933685> You are now AFK within this server! | Reason: **${message}**`,
             ephemeral: false,
           });
         }
-
         break;
 
       case "remove":
-        if (!Data)
+        if (!Data) {
           return await interaction.reply({
-            content: `<:error:1238390205707325500> | You are not afk within this server.`,
+            content: `<:error:1238390205707325500> | You are not AFK within this server.`,
             ephemeral: true,
           });
-        else {
+        } else {
           const nick = Data.Nickname;
           await afkSchema.deleteMany({
             Guild: interaction.guild.id,
@@ -79,11 +92,17 @@ module.exports = {
           const embed = new EmbedBuilder()
             .setColor(client.config.embed)
             .setDescription(
-              `<:etick:1238390219300933685> Your afk has been removed`
+              `<:etick:1238390219300933685> Your AFK has been removed`
             );
 
           await interaction.reply({ embeds: [embed], ephemeral: true });
         }
+        break;
     }
   },
 };
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

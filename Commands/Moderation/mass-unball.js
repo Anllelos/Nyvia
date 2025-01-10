@@ -9,7 +9,10 @@ module.exports = {
  
     async execute(interaction, client) {
  
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator) && interaction.user.id !== client.config.developerid) return await interaction.reply({ content: '<:cross:1271441946283610195> | You **do not** have the permission to do that!', ephemeral: true});
+        // Check if the user is the server owner
+        if (interaction.user.id !== interaction.guild.ownerId) {
+            return interaction.reply({ content: "You do not have permission to use this command. Only the server owner can execute it.", ephemeral: true });
+        }
  
         try {
  
@@ -26,3 +29,8 @@ module.exports = {
         }
     }
 }
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

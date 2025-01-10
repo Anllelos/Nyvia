@@ -8,9 +8,10 @@ const {
   ChatInputCommandInteraction,
   Client,
 } = require("discord.js");
+const axios = require('axios');
 const weather = require("weather-js");
 const math = require("mathjs");
-const { generatePassword } = require('generate-passwords');
+const { generatePassword } = require("generate-passwords");
 const translate = require("@iamtraction/google-translate");
 const BitlyClient = require("bitly").BitlyClient;
 const bitly = new BitlyClient("5a760c5f5dbd6b2e66e61e69976c221fd55ead2f");
@@ -158,6 +159,18 @@ module.exports = {
             .setRequired(true)
         )
     )
+    
+    .addSubcommand((command) =>
+      command
+        .setName(`iplookup`)
+        .setDescription(`Looks up information about an IP address.`)
+        .addStringOption((option) =>
+          option
+            .setName("ip")
+            .setDescription("The IP address to look up.")
+            .setRequired(true)
+        )
+    )
     .addSubcommand((command) =>
       command
         .setName(`translate`)
@@ -222,48 +235,68 @@ module.exports = {
     // Password Generator
     switch (sub) {
       case "password-generator":
-        let length = await interaction.options.getInteger('length');
-        let allowletters = await interaction.options.getString('allow-letters') || false;
-        let allownumbers = await interaction.options.getString('allow-numbers') || false;
-        let allowsymbols = await interaction.options.getString('allow-symbols') || false;
-        let upper = await interaction.options.getString('upper-only') || false;
-        let lower = await interaction.options.getString('lower-only') || false;
+        let length = await interaction.options.getInteger("length");
+        let allowletters =
+          (await interaction.options.getString("allow-letters")) || false;
+        let allownumbers =
+          (await interaction.options.getString("allow-numbers")) || false;
+        let allowsymbols =
+          (await interaction.options.getString("allow-symbols")) || false;
+        let upper =
+          (await interaction.options.getString("upper-only")) || false;
+        let lower =
+          (await interaction.options.getString("lower-only")) || false;
 
-        let finnalallowletters = false
-        if (allowletters !== false && allowletters !== 'false') {
-          finnalallowletters = true
+        let finnalallowletters = false;
+        if (allowletters !== false && allowletters !== "false") {
+          finnalallowletters = true;
         }
 
-        let finnalallownumbers = false
-        if (allownumbers !== false && allownumbers !== 'false') {
-          finnalallownumbers = true
+        let finnalallownumbers = false;
+        if (allownumbers !== false && allownumbers !== "false") {
+          finnalallownumbers = true;
         }
 
-        let finnalallowsymbols = false
-        if (allowsymbols !== false && allowsymbols !== 'false') {
-          finnalallowsymbols = true
+        let finnalallowsymbols = false;
+        if (allowsymbols !== false && allowsymbols !== "false") {
+          finnalallowsymbols = true;
         }
 
         let finnalupper = false;
-        if (upper !== false && upper !== 'false') {
-          finnalupper = true
+        if (upper !== false && upper !== "false") {
+          finnalupper = true;
         }
 
         let finnallower = false;
-        if (lower !== false && lower !== 'false') {
+        if (lower !== false && lower !== "false") {
           finnallower = true;
         }
 
-        if (finnalallowletters === false && finnalallownumbers === false && finnalallowsymbols === false) return await interaction.reply({ content: `You must specify **atleast** 1 type of **character** to generate a **password**!`, ephemeral: true });
+        if (
+          finnalallowletters === false &&
+          finnalallownumbers === false &&
+          finnalallowsymbols === false
+        )
+          return await interaction.reply({
+            content: `You must specify **atleast** 1 type of **character** to generate a **password**!`,
+            ephemeral: true,
+          });
 
-        const data = await generatePassword({ length: length, letters: finnalallowletters, numbers: finnalallownumbers, symbols: finnalallowsymbols, upperOnly: finnalupper, lowerOnly: finnallower });
+        const data = await generatePassword({
+          length: length,
+          letters: finnalallowletters,
+          numbers: finnalallownumbers,
+          symbols: finnalallowsymbols,
+          upperOnly: finnalupper,
+          lowerOnly: finnallower,
+        });
 
         const embed = new EmbedBuilder()
           .setTitle(`> Password Generated`)
           .setAuthor({ name: `🔑 Password Generator` })
           .setFooter({ text: `🔑 Password Generated` })
           .addFields({ name: `• Password`, value: `> ||\`\`\`${data}\`\`\`||` })
-          .setColor(client.config.embed)
+          .setColor(client.config.embed);
 
         await interaction.reply({ embeds: [embed], ephemeral: true });
     }
@@ -575,11 +608,12 @@ module.exports = {
             const lc = data[data.length - 1];
 
             data +=
-              `${((parseInt(value) == value || value === ".") &&
-                (lc == parseInt(lc) || lc === ".")) ||
+              `${
+                ((parseInt(value) == value || value === ".") &&
+                  (lc == parseInt(lc) || lc === ".")) ||
                 data.length === 0
-                ? ""
-                : " "
+                  ? ""
+                  : " "
               }` + value;
           }
 
@@ -668,6 +702,45 @@ module.exports = {
         await interaction.reply({ content: `${message}`, tts: true });
     }
 
+    // IP Lookup
+    switch (sub) {
+      case "iplookup":
+          await interaction.deferReply({ ephemeral: true }); // Set ephemeral to true
+  
+          const ip = interaction.options.getString('ip');
+  
+          try {
+              const response = await axios.get(`http://ip-api.com/json/${ip}`);
+              const data = response.data;
+  
+              if (data.status === 'fail') {
+                  await interaction.editReply({ content: `Error: ${data.message}`, ephemeral: true }); // Ensure ephemeral is set here
+                  return;
+              }
+  
+              const embed = new EmbedBuilder()
+                  .setTitle(`IP Lookup for ${data.query}`)
+                  .addFields(
+                      { name: 'Country', value: data.country, inline: true },
+                      { name: 'Region', value: data.regionName, inline: true },
+                      { name: 'City', value: data.city, inline: true },
+                      { name: 'ZIP', value: data.zip, inline: true },
+                      { name: 'Latitude', value: data.lat.toString(), inline: true },
+                      { name: 'Longitude', value: data.lon.toString(), inline: true },
+                      { name: 'ISP', value: data.isp, inline: true },
+                      { name: 'Organization', value: data.org, inline: true },
+                      { name: 'AS', value: data.as, inline: true }
+                  )
+                  .setColor(client.config.embed)
+                  .setTimestamp();
+  
+              await interaction.editReply({ embeds: [embed], ephemeral: true }); // Ensure ephemeral is set here
+          } catch (error) {
+              console.error(error);
+              await interaction.editReply({ content: 'An error occurred while looking up the IP address. Please try again later.', ephemeral: true }); // Ensure ephemeral is set here
+          }
+  }
+    
     // Translate
     switch (sub) {
       case "translate":
@@ -746,3 +819,8 @@ module.exports = {
     }
   },
 };
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

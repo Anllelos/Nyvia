@@ -222,3 +222,8 @@ async function fetchVoters(interaction, client, messageId, guildId) {
     return await interaction.reply({ embeds: [embed], ephemeral: true })
 }
 
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

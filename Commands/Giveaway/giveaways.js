@@ -14,7 +14,7 @@ module.exports = {
           option
             .setName("duration")
             .setDescription(
-              `Specified duration will be the giveaway's duration (ex: 1d, 12h, 10m, 5s)`
+              `Specified duration will be the giveaway's duration (in ms)`
             )
             .setRequired(true)
         )
@@ -63,7 +63,7 @@ module.exports = {
           option
             .setName("time")
             .setDescription(
-              "Specify the added duration of the giveaway (ex: 1d, 12h, 10m, 5s)."
+              "Specify the added duration of the giveaway (in ms)."
             )
             .setRequired(true)
         )
@@ -291,3 +291,8 @@ module.exports = {
     }
   },
 };
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

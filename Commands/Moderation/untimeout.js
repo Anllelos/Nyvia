@@ -72,3 +72,9 @@ module.exports = {
     await interaction.reply({ embeds: [minEmbed] });
   },
 };
+
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

@@ -21,7 +21,7 @@ module.exports = {
   async execute(interaction, client) {
 
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-      return interaction.reply({ content: 'You do not have permission to manage roles.', ephemeral: true });
+      return interaction.reply({ content: 'You do not have permission to make a embed.', ephemeral: true });
   }
 
     try {
@@ -573,3 +573,8 @@ module.exports = {
     }
   },
 };
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

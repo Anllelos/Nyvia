@@ -316,3 +316,8 @@ async function createBackupData(interaction) {
         throw new Error('An error occurred while creating the backup data.');
     }
 }
+
+/**
+ * Credits: Arpan | @arpandevv
+ * Buy: https://feji.us/hx7je8
+ */

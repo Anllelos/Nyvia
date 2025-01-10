@@ -1,0 +1,39 @@
+### Changelog: v1.0.5 → v1.0.6  
+
+1. **Music System**  
+   - Updated `MusicCard` and `trackstart.js`.  
+   - Revised `package.json` dependencies.  
+   - Fixed the `nowplaying` command functionality in `nowplaying.js`.  
+   - Resolved skip button issues in `trackstart.js` and added new themed Music Card.  
+   - Added new `loop.js` file to the Music System.  
+
+2. **Booster System**  
+   - Introduced updates in `booster.js`, `index.js`, and associated schemas.  
+
+3. **Verification System**  
+   - Enhanced Captcha Image generation in `index.js`.  
+
+4. **IP Lookup Tool**  
+   - Added enhancements in `tools.js`.  
+
+5. **NSFW Filter**  
+   - Implemented NSFW content filtering in `image-gen.js`.  
+   - Added `rsnchat-filter` as a dependency.  
+
+6. **AI System**  
+   - Updated functionality in `index.js`.  
+
+7. **Mention Reply Feature**  
+   - Improved response handling in `index.js`.  
+
+8. **Playlist Feature**  ( Paid Addon $3.99 )
+   - Updated `playlist.js` and its associated schema.  
+
+9. **Pterodactyl Integration**  
+    - Enhanced `pterodactyl.js` and its schema named `ptero.js`.  
+
+10. **24/7 Mode**  
+    - Implemented new functionality and updated its event and schema.  
+
+11. **Ticket System**  
+    - Made updates to `ticketActions.js`, `ticket.js`, and `ticketResponse.js`.  

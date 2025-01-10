@@ -40,7 +40,7 @@ function handleLogs(client) {
 
       return send_log(message.guild.id, embed);
     } catch (err) {
-      console.log(`Couldn't log deleted msg`);
+      //console.log(`Couldn't log deleted msg`);
     }
   });
 
@@ -105,7 +105,7 @@ function handleLogs(client) {
         .addFields({ name: `• Channel`, value: `> ${oldChannel}` })
         .addFields({
           name: `• Changes`,
-          value: `> **PixelVal** couldn't find any changes!`,
+          value: `> **Razor** couldn't find any changes!`,
         })
         .setThumbnail(client.user.displayAvatarURL({ dynamic: true }))
         .setAuthor({ name: `🚧 Logging System` })
